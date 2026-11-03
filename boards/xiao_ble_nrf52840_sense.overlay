@@ -1,0 +1,41 @@
+/ {
+    /* サーボ用のPWMエイリアス設定 */
+    aliases {
+        servo-pwm = &pwm0_servo;
+    };
+
+    /* サーボ駆動用の疑似デバイス定義 */
+    pwm0_servo: pwm_servo {
+        compatible = "pwm-servo";
+        pwms = <&pwm0 0 PWM_MSEC(20) PWM_POLARITY_NORMAL>; /* D0ピン (P0.02) */
+    };
+};
+
+&pwm0 {
+    status = "okay";
+    pinctrl-0 = <&pwm0_default>;
+    pinctrl-names = "default";
+};
+
+&pinctrl {
+    pwm0_default: pwm0_default {
+        group1 {
+            psels = <NRF_PSEL(PWM_OUT0, 0, 2)>; /* P0.02 = D0 */
+        }
+    };
+};
+
+&i2c0 {
+    status = "okay";
+    clock-frequency = <I2C_BITRATE_FAST>; /* 400kHz */
+
+    ssd1306: ssd1306@3c {
+        compatible = "solomon,ssd1306fb";
+        reg = <0x3c>;
+        width = <128>;
+        height = <64>;
+        segment-remap;
+        com-invdir;
+        prechargep = <0x22>;
+    };
+};
